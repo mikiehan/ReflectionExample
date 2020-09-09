@@ -22,7 +22,21 @@ public class TestMain {
     @Test
     public void test1() throws Exception {
         setFinalStaticField(Main.class, "SIZE", 5);
-        System.out.println(Main.getSize());
-        Assert.assertTrue(Main.getSize() == 5);
+        System.out.println(Main.getSize(1));
+        Assert.assertTrue(Main.getSize(1) == 5);
+    }
+
+    @Test
+    public void test2() throws Exception {
+        setFinalStaticField(Main.class, "SIZE2", 5);
+        System.out.println(Main.getSize(2));
+        Assert.assertTrue(Main.getSize(2) == 5);
+    }
+
+    @Test
+    public void test3() throws Exception { //this test will fail
+        setFinalStaticField(Main.class, "SIZE3", 5);
+        System.out.println(Main.getSize(3));
+        Assert.assertTrue(Main.getSize(3) == 5);
     }
 }

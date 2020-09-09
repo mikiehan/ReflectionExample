@@ -2,9 +2,14 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Scanner;
 
 public class TestMain {
 
@@ -46,7 +51,12 @@ public class TestMain {
     public void test4() throws Exception {
         setFinalStaticField(Main.class, "SIZE2", 4);
         String studentOutput = captureMainOutput();
-        Assert.assertTrue(studentOutput.equals("Hello World! 4" + System.lineSeparator()));
+        Assert.assertTrue(cleanWhiteSpaceEndings(studentOutput).equals("Hello World! 4" + System.lineSeparator()));
+
+        ////In real case instead of hard coding the expected string
+        ////use below code
+        //String expectedStr = dumpFileContentsToString("/blah/blah/expected4.txt");
+        //Assert.assertTrue(cleanWhiteSpaceEndings(studentOutput).equals(expectedStr));
     }
 
     private static String captureMainOutput() {
@@ -60,5 +70,41 @@ public class TestMain {
         System.out.flush();
         System.setOut(oldOut);
         return baos.toString();
+    }
+
+    //Need to use this method for expected file input
+    //Expected file was generated in Windows
+    //But to be also used on Linux/Mac use this cleanNewString
+    private static String cleanNewLineString(String str) {
+        str = str.replaceAll("\n", System.lineSeparator());
+        str = str.replaceAll("\r\n", System.lineSeparator());
+        str = str.replaceAll("\r", System.lineSeparator());
+        return str;
+    }
+
+    //Need to use this method for cleaning student's output
+    //Some students put some whitespace at the end so trim that down
+    //This also cleans line separator issue
+    //(Expected file doesn't have the whitespace ending)
+    private static String cleanWhiteSpaceEndings(String str) {
+        StringBuilder sb = new StringBuilder();
+        Scanner scan = new Scanner(str);
+        while(scan.hasNextLine()) {
+            String oneLine = scan.nextLine();
+            sb.append(oneLine.replaceFirst("\\s++$", "")); //remove whitespace endings
+            sb.append(System.lineSeparator()); //add proper line separator
+        }
+        return sb.toString();
+    }
+
+    //Use this method to read expected output file
+    private static String dumpFileContentsToString(String filePath) {
+        try {
+            String str = new String(Files.readAllBytes(Paths.get(filePath)), StandardCharsets.UTF_8);
+            return cleanNewLineString(str);
+        } catch (IOException e) {
+            Assert.fail("Could not load file: " + filePath);
+            return null;
+        }
     }
 }

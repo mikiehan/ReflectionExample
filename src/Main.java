@@ -7,7 +7,7 @@ public class Main {
     private static final int SIZE3 = 30; // we cannot change this NO MATTER WHAT (as complier replaces the code (hard-coded) before the class gets loaded
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        System.out.println("Hello World! " + SIZE2);
 
     }
 
